@@ -1,0 +1,19 @@
+{
+  "name": "houdini-mcp-base",
+  "displayName": "Houdini MCP - Base",
+  "version": "0.1.0",
+  "description": "Skills and a read-only auditor for the base tool pack (houdini_mcp_base): visual review with snapshots and videos, and scene debugging.",
+  "author": {
+    "name": "JuyeongYi",
+    "url": "https://github.com/JuyeongYi"
+  },
+  "repository": "https://github.com/JuyeongYi/houdini_mcp_marketplace",
+  "keywords": [
+    "houdini",
+    "viewport",
+    "debugging"
+  ],
+  "dependencies": [
+    "houdini-mcp"
+  ]
+}

@@ -1,0 +1,10 @@
+# Backticked snake_case names in skills/agents that are not Houdini MCP tools or arguments.
+# One per line. Keep this short: a name belongs here only when it is a node name used as an
+# example, a Houdini node type, or another identifier that is deliberately not a tool.
+block_begin
+block_end
+brick_maker
+flag_pin_edge
+kma_pyroshader
+rop_image
+wall_body
