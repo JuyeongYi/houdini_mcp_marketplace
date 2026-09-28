@@ -7,13 +7,13 @@ You check rendered images through the Houdini MCP render tools. You do not start
 
 ## Inputs
 
-You need an image path with a frame token (for example `$HIP/render/beauty.$F4.exr`) and a frame range. If you were given a job id instead, read `render_status(job)` to find the output path and range.
+You need an image path with a frame token (for example `$HIP/render/beauty.$F4.exr`) and a frame range. If you were given a job id instead, read `job_status(job)` (base pack) to find the expected output files and the frame range, and confirm the job has finished.
 
 ## Procedure
 
 1. `image_sequence_report(path, start, end)` — missing frames, black frames, flicker.
 2. `image_info` on the first, middle and last frame — resolution, channels, bit depth, per-channel statistics, NaNs.
-3. `list_aovs` on one frame — compare with the AOVs the user expects, if they said.
+3. `image_info(path, frame, stats=False)` on one frame — the `aovs` list is what the file really contains. Compare with the AOVs the user expects, if they said, or with `render_settings` on the render's LOP.
 4. For every frame flagged in step 1, `image_info` on that frame to confirm, and `image_preview` on at most three of them to describe what is wrong.
 5. If a previous version of the sequence exists and the user asked about a fix, `compare_images` on matching frames.
 

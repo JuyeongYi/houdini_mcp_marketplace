@@ -1,8 +1,8 @@
 {
   "name": "houdini-mcp-rig",
   "displayName": "Houdini MCP - Rigging",
-  "version": "0.1.0",
-  "description": "Skill for KineFX skeletons, skinning and APEX rig graphs with validation, using the houdini_mcp_rig tools.",
+  "version": "0.2.0",
+  "description": "Skill for KineFX characters: FBX import/export, skeletons, skinning and weight repair, MotionClips, retargeting and APEX rig graphs with validation, using the houdini_mcp_rig tools.",
   "author": {
     "name": "JuyeongYi",
     "url": "https://github.com/JuyeongYi"

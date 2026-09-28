@@ -4,6 +4,9 @@
 block_begin
 block_end
 brick_maker
+color_reason
+color_warning
+data_type
 flag_pin_edge
 kma_pyroshader
 rop_image
