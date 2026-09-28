@@ -1,0 +1,21 @@
+{
+  "name": "houdini-mcp-groom",
+  "displayName": "Houdini MCP - Groom",
+  "version": "0.1.0",
+  "description": "Skill for inspecting grooms and hair cards with the houdini_mcp_groom tools - strand statistics, Guides/Skin/Skin VDB chain wiring checks and card-to-strand fit reports.",
+  "author": {
+    "name": "JuyeongYi",
+    "url": "https://github.com/JuyeongYi"
+  },
+  "repository": "https://github.com/JuyeongYi/houdini_mcp_marketplace",
+  "keywords": [
+    "houdini",
+    "groom",
+    "hair",
+    "haircard"
+  ],
+  "dependencies": [
+    "houdini-mcp",
+    "houdini-mcp-base"
+  ]
+}

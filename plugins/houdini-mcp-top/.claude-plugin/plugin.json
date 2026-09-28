@@ -1,0 +1,21 @@
+{
+  "name": "houdini-mcp-top",
+  "displayName": "Houdini MCP - TOP/PDG",
+  "version": "0.1.1",
+  "description": "Skill for cooking TOP (PDG) networks and debugging failed work items - grouped causes, commands, exit codes and log tails - with the houdini_mcp_top tools.",
+  "author": {
+    "name": "JuyeongYi",
+    "url": "https://github.com/JuyeongYi"
+  },
+  "repository": "https://github.com/JuyeongYi/houdini_mcp_marketplace",
+  "keywords": [
+    "houdini",
+    "pdg",
+    "tops",
+    "batch"
+  ],
+  "dependencies": [
+    "houdini-mcp",
+    "houdini-mcp-base"
+  ]
+}
