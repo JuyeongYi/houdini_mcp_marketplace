@@ -1,7 +1,7 @@
 {
   "name": "houdini-mcp-sop",
   "displayName": "Houdini MCP - SOP",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Skill for procedural SOP modelling with the houdini_mcp_sop tools: build, loop, measure every step, validate meshes, fix topology and UVs.",
   "author": {
     "name": "JuyeongYi",

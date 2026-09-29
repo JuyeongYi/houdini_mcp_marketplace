@@ -15,6 +15,10 @@ Every editing tool in this pack cooks the new node and returns before/after stat
 
 Name each node by role and give it an English `comment`. Chain nodes by passing the previous node's path as the next `path`.
 
+Creating a node does **not** move the display flag by default (`display=False` on every SOP-creating tool). The node the user is looking at - typically a merge at the end of the network - stays displayed. Pass `display=True` on the node that should become visible (a final assembly, or a node you want to check in the viewport), or read results with `sop_report` / `geometry_stats` without moving the flag at all.
+
+Assemble parts with `merge_sops(inputs, comment, name, display)`. It reports each input's counts and `attribute_mismatch`: attributes present on only some inputs, which Merge fills with defaults (a `Cd` on one input turns the others black). Fix those upstream before merging.
+
 Fixed-choice arguments (`shape`, `group_type`, `operation`, `kind`, ...) are enums in the tool schema - pick from the listed values. Group types are singular everywhere in this pack: point / prim / edge / vertex / guess / breakpoint.
 
 If a call fails, the pack deletes the nodes that call created and gives the display flag back to the previous node. Fix the arguments and call the same tool again - do not clean up by hand, and do not expect a half-built node to be left behind.
@@ -25,6 +29,7 @@ If a call fails, the pack deletes the nodes that call created and gives the disp
 |---|---|
 | Base shapes | `create_primitive`, `create_curve`, `revolve_profile` |
 | Instancing | `copy_to_points` (`pack=True` for many copies) |
+| Assembly | `merge_sops` |
 | Detail | `bevel`, `extrude_faces`, `bridge_edges`, `boolean_op` |
 | Topology | `convert_geometry`, `triangulate`, `remesh_geometry`, `reduce_polygons`, `delete_geometry` |
 | Placement | `transform_geometry` |
@@ -49,7 +54,7 @@ Never hand-wire `block_begin` / `block_end`. `create_loop_block` builds the begi
 | feedback | each iteration feeds the previous result back in (growth, repeated deformation). `iterations` defaults to 10 |
 | count | the whole input `iterations` times, merged (numbered copies) |
 
-The loop body starts empty. Build it by calling SOP tools with `path` set to the returned begin node, connect the last body node to input 0 of the end node with `connect_nodes`, move the display flag to the end node, then run `sop_report` on the end node. Read the iteration number in VEX with `detail("../<metadata node>", "iteration")`. For pieces, `iterations` caps the number of pieces while testing - turn the cap off afterwards as the tool's note says.
+The loop body starts empty. Build it by calling SOP tools with `path` set to the returned begin node, connect the last body node to input 0 of the end node with `connect_nodes`, pass `display=True` (or `set_flags`) if the end node should be displayed, then run `sop_report` on the end node. Read the iteration number in VEX with `detail("../<metadata node>", "iteration")`. For pieces, `iterations` caps the number of pieces while testing - turn the cap off afterwards as the tool's note says.
 
 ## Rules that save time
 
