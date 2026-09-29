@@ -1,6 +1,8 @@
 ---
 name: vex-wrangle-authoring
-description: Write, compile-check and debug VEX wrangle code and OpenCL SOP kernels with the houdini_mcp_vex tools (vex_function_info, expression_function_info, validate_vex, create_wrangle, update_wrangle, diagnose_wrangle, diagnose_opencl). Use whenever you write VEX or VEXpression code for Houdini, when a wrangle or OpenCL SOP errors, or when iterative point operations (relaxation, smoothing) are needed.
+description: "Write, compile-check and debug VEX wrangle code and OpenCL SOP kernels with the houdini_mcp_vex tools (vex_function_info, expression_function_info, validate_vex, create_wrangle, update_wrangle, diagnose_wrangle, diagnose_opencl)."
+when_to_use: "Use whenever you write VEX or VEXpression code for Houdini, when a wrangle or OpenCL SOP errors, or when iterative point operations (relaxation, smoothing) are needed."
+compatibility: "Needs a GUI Houdini 22+ session running the HoudiniMCP server with the houdini_mcp_vex tool pack loaded."
 ---
 
 # VEX wrangles and OpenCL kernels
@@ -13,8 +15,7 @@ description: Write, compile-check and debug VEX wrangle code and OpenCL SOP kern
   signature plus a one-line summary and named usage examples pulled from the
   installed help (the named-usages field has real argument names; vcc's own
   signatures do not).
-- Only know what you want to do? `vex_function_info(query=...)` (same tool,
-  the other argument — this absorbed the old search-by-purpose tool) searches
+- Only know what you want to do? `vex_function_info(query=...)` searches
   by purpose (e.g. `"closest point"`, `"curl noise"`) across the installed
   function help (name/summary/tags/group/argument names). Results where all
   your words match somewhere come first; results that match only some of the
@@ -44,17 +45,17 @@ description: Write, compile-check and debug VEX wrangle code and OpenCL SOP kern
    - `create_channel_parms` defaults to `True`: every ch-family call
      (`ch`/`chf`/`chi`/`chv`/`chu`/`chp`/`ch2`/`ch3`/`ch4`/`chs`/`chsop`/
      `chdict`/`chramp`) whose argument is a **valid parameter
-     name** (letters/digits/underscore, no `/`) gets a matching spare
-     parameter automatically (no more manual "Create Spare Parameters").
+     name** (letters/digits/underscore, not starting with a digit, no `/`) gets a matching spare
+     parameter automatically.
      A `ch()` argument that points at another node's parameter
      (`ch("../ctrl/amp")`) or that isn't a valid name at all
      (`ch("my amp")`) is never turned into a spare parameter — it's reported
      under `channel_parms.external_refs` instead, with `resolved: true/false`
      so you know whether the reference actually exists. The same split shows
      up on `create_wrangle`/`update_wrangle`/`diagnose_wrangle`'s top-level
-     report: the local-and-missing field is fixable by re-running with
-     `create_channel_parms=True`, while the unresolved-external-reference
-     field (points elsewhere, or invalid) will not be fixed by that — a
+     report: `missing_channel_parms` is fixable by re-running with
+     `create_channel_parms=True`, while `unresolved_channel_refs` (points
+     elsewhere, or invalid) will not be fixed by that — a
      spare parameter on this node can't satisfy a reference to another one.
      Set initial values with `channel_values={"scale": 0.5}`. If a
      differently-typed parameter already exists under that name, it is
@@ -89,15 +90,18 @@ description: Write, compile-check and debug VEX wrangle code and OpenCL SOP kern
 
 For relaxation, smoothing or any "repeat N times" point update:
 
-- Use a **point wrangle inside a for-each feedback loop** (`block_begin` with
-  feedback method, `block_end` with count iterations), not a detail wrangle
-  that loops over all points itself. Point wrangles run in parallel and the
-  loop keeps each iteration's result as the next input.
-- Put the iteration count on the `block_end`, and keep per-iteration weights
-  (for example a blend mask) as attributes computed once before the loop.
-- There is no dedicated tool for wiring up the `block_begin`/`block_end` pair
-  yet — create and connect them with the base pack's `create_node` /
-  `connect_nodes` and set `blockpath`/`method`/`iterations` with `set_parms`.
+- Use a **point wrangle inside a feedback loop**, not a detail wrangle that
+  loops over all points itself. Point wrangles run in parallel and the loop
+  keeps each iteration's result as the next input.
+- Build the loop with the SOP package's `create_loop_block(kind="feedback",
+  iterations=N)` rather than wiring `block_begin`/`block_end` by hand. Put the
+  wrangle in the body with `create_wrangle(parent=<loop network>,
+  input_paths=[<begin node>])`, connect it to input 0 of the end node with
+  `connect_nodes`, then check the end node with `sop_report`. Without the SOP
+  package, build the pair with `create_node` / `connect_nodes` and set
+  `blockpath`/`method`/`iterations` with `set_parms`.
+- Keep per-iteration weights (for example a blend mask) as attributes
+  computed once before the loop.
 
 ## OpenCL SOP kernels
 
@@ -116,8 +120,9 @@ explicitly in the summary:
   `clCreateKernel (-46: CL_INVALID_KERNEL_NAME)`, not a helpful message from
   OpenCL itself — `diagnose_opencl` explains this one for you.
 
-Pass `input_path` to also check that every `#bind point|prim|vertex|detail`
-attribute name actually exists on that input, matched within that bind's own
+Pass `input_path` (the node on input 0) to also check that every
+`#bind point|prim|vertex|detail` attribute without `input=N` actually exists
+on that input, matched within that bind's own
 class (a `#bind prim P` does not match a point attribute named `P`). This
 applies to write binds (`&name`) too — OpenCL SOP only writes to an attribute
 that already exists on the input; it does not create one for you. When a

@@ -1,6 +1,8 @@
 ---
 name: dop-simulation-setup
-description: Build, test, cache and debug Houdini simulations as DOP networks with the houdini_mcp_dop tools - recipes per object type, objects, solvers, sources, forces, fields, low-resolution test runs, stepping, .sim caches through a Dynamics ROP and setup validation. Use when setting up any simulation (rigid bodies, pyro/smoke, FLIP, Vellum cloth, particles), when a simulation explodes, is empty or behaves unexpectedly, or when caching a simulation.
+description: "Build, test, cache and debug Houdini simulations as DOP networks with the houdini_mcp_dop tools - recipes per object type, objects, solvers, sources, forces, fields, low-resolution test runs, stepping, .sim caches through a Dynamics ROP and setup validation."
+when_to_use: "Use when setting up any simulation (rigid bodies, pyro/smoke, FLIP, Vellum cloth, particles), when a simulation explodes, is empty or behaves unexpectedly, or when caching a simulation."
+compatibility: "Needs a GUI Houdini 22+ session running the HoudiniMCP server with the houdini_mcp_dop tool pack loaded."
 ---
 
 # DOP simulations
@@ -21,22 +23,22 @@ Set simulations up as an explicit DOP network (dopnet → objects → solver →
 ## Assembly order per simulation type
 
 - **Rigid bodies**: `add_dop_object(..., "rbdobject", source_object=...)`, then a collider with `object_type="staticobject"`.
-- **Pyro / smoke**: build the SOP source (pyrosource in Volume Scatter mode with density, temperature and v → volumerasterizeattributes). `add_dop_object(..., "smokeobject_sparse")` (auto-resizing; the dense smokeobject also works) with no source object, then `add_sim_source(dopnet, "<rasterize SOP>", "<container>")`. The default mapping adds density, temperature and v → vel; change it with `fields_map` and `op` (add, max, copy ...).
+- **Pyro / smoke**: build the SOP source (pyrosource in Volume Scatter mode with density, temperature and v → volumerasterizeattributes). `add_dop_object(..., "smokeobject_sparse")` (auto-resizing; the dense smokeobject also works) with no source object, then `add_sim_source(dopnet, "<rasterize SOP>", "<container>", comment)`. The default mapping adds density, temperature and v → vel; change it with `fields_map` and `op` (add, max, copy ...).
 - **FLIP**: put a flipsource SOP on display in the source object, `add_dop_object(..., "flipobject", source_object=..., parms={"particlesep": ...})`. To keep emitting, `add_sim_source` with the flipsource SOP (surface, min). The shelf name flipfluidobject does not exist as a DOP type.
 - **Vellum**: see [vellum-cloth.md](vellum-cloth.md). `add_dop_object(..., "vellumobject", source_object=..., constraints_sop=...)`.
-- **Particles**: `add_dop_object(..., "popobject")`, then `add_sim_source(dopnet, "<emitting SOP>", "<object>", parms={"emittype": "surface"})`, then POP forces with `add_dop_force`.
+- **Particles**: `add_dop_object(..., "popobject")`, then `add_sim_source(dopnet, "<emitting SOP>", "<object>", comment, parms={"emittype": "surface"})`, then POP forces with `add_dop_force`.
 
 ## Run cheaply first
 
 - `test_simulation(dopnet, start, end, resolution_factor)` — low-resolution run with a per-frame report (divergence, idle objects, element and field trends). SOP-side resolution parameters (for example the flipsource `particlesep`) go in `extra_parms` so they are lowered together. If nothing could be lowered the verdict says it ran at full resolution.
-- `step_simulation(dopnet, frames)` — advance from the current frame and see each frame's state.
+- `step_simulation(dopnet, frames)` — cook the frames after the current one and see each frame's state; the current frame is restored afterwards, so set it where you want to start.
 - `reset_simulation(dopnet, cook_first_frame=True)` — discard the cache and check the initial state.
 - Look at motion with `viewport_sequence` over several frames, not a single snapshot. Make sure the viewport displays the read-back node, not the raw DOP object.
 
 ## Inspect
 
-`list_dop_objects`, `dop_object_info` (`group_subdata=True` splits fields / containers / other and gives the creator node's comment), `dop_relationships`, `simulation_info` (solver input labels, nodes not connected to the output), `list_dop_fields`, `field_stats(deep=True)` for NaNs, `sim_memory`.
+`list_dop_objects`, `dop_object_info` (creator node and comment; `group_subdata=True` splits fields, temporary fields, containers and other data), `dop_relationships`, `simulation_info` (solver input labels, nodes not connected to the output), `list_dop_fields`, `field_stats(deep=True)` for NaNs, `sim_memory`.
 
 ## Cache
 
-`write_sim_cache(dopnet, directory, start, end, comment)` bakes `.sim` files through a Dynamics ROP in `/out` (one file per frame, kept in the scene so it can be re-run). In the foreground it returns a per-frame report; bake one or two frames first. Long ranges: `background=True` (the scene must have been saved once) and follow the returned job with `job_status`. Then `load_sim_cache(dopnet, comment)` puts a File DOP in read mode at the end of the chain (`enable=False` solves again) — do not set the File DOP mode with `set_parms`. `sim_cache_status` compares memory and disk.
+`write_sim_cache(dopnet, directory, start, end, comment)` bakes `.sim` files through a Dynamics ROP in `/out` (one file per frame, kept in the scene so it can be re-run). In the foreground it returns a summary of the bake (frames baked, files written, a run summary and the first error frame); bake one or two frames first. Long ranges: `background=True` (the scene must have been saved once) and follow the returned job with `job_status`. Then `load_sim_cache(dopnet, comment)` puts a File DOP in read mode at the end of the chain (`enable=False` solves again); switch between cache and solve with it rather than editing the File DOP. `sim_cache_status` compares memory and disk.

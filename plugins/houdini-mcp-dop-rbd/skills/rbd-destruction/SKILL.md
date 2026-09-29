@@ -1,6 +1,8 @@
 ---
 name: rbd-destruction
-description: Set up and diagnose rigid-body destruction in Houdini with the houdini_mcp_dop_rbd tools - fractured or stacked pieces, glue constraints, density and mass, pinned foundations, and frame-by-frame simulation reports. Use when building an RBD destruction, when pieces fall apart at frame one, the whole structure slides, nothing breaks, or you need to know what moved and broke when.
+description: "Set up and diagnose rigid-body destruction in Houdini with the houdini_mcp_dop_rbd tools - fractured or stacked pieces, glue constraints, density and mass, pinned foundations, and frame-by-frame simulation reports."
+when_to_use: "Use when building an RBD destruction, when pieces fall apart at frame one, the whole structure slides, nothing breaks, or you need to know what moved and broke when."
+compatibility: "Needs a GUI Houdini 22+ session running the HoudiniMCP server with the houdini_mcp_dop_rbd tool pack loaded."
 ---
 
 # RBD destruction
@@ -18,8 +20,8 @@ output SOP or a DOP Import SOP.
 `rbd_piece_stats(path, constraints=..., constraints_output=1)` on the
 fractured/assembled output:
 
-- slivers (tiny volume) that explode or jitter;
-- estimated mass per piece (uses the `density` attribute when present);
+- slivers (volume under `sliver_volume`, default 0.05 m³ - lower it for small bricks) that explode or jitter;
+- estimated mass per piece (a point `density` on packed pieces, otherwise the `density` argument, default 1000 kg/m³);
 - constraints per piece — pieces with zero constraints fall immediately.
   `constraints` should point to a stage that still has point `name` (piece
   linkage). RBD Constraint Properties keeps it on its Constraint Geometry
@@ -81,11 +83,11 @@ until you have checked the geometry yourself.
 
 `rbd_sim_report(path, start, end, quiet_until=..., group_by="part", constraints=...)` with `path` on the dopnet SOP or a DOP Import of the pieces:
 
-- per frame: how many pieces moved, max and mean displacement, and — when `constraints` is given — remaining and broken constraints;
+- per sampled frame (about 12 between `start` and `end`, or your `frames`, at most 50): how many pieces moved, maximum displacement (mean per `group_by` group), and — when `constraints` is given — remaining and broken constraints;
 - `constraints` must be a **separate** SOP: the dopnet SOP and DOP Import have a single output, so constraints cannot come from another port of the pieces node. Add a second DOP Import next to the dopnet with Import Style = Fetch Geometry, Object Mask = the RBD object, Geometry Data Path = `ConstraintGeometry` (the Constraint Network DOP's data name) and pass its path (`constraints_output` is that node's port, default 0). Without it no broken counts or start-break warning are produced;
 - `group_by` splits counts by the attribute: shows whether only the roof falls or the walls slide too;
 - `quiet_until` flags anything that moved before the impact frame;
-- `exclude="projectile"` keeps the projectile out of the statistics.
+- `exclude="projectile*"` keeps the projectile out of the statistics (whole-name globs, space-separated).
 
 Interpretation:
 

@@ -1,7 +1,7 @@
 {
   "name": "houdini-mcp-base",
   "displayName": "Houdini MCP - Base",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Skills and a read-only auditor for the base tool pack (houdini_mcp_base): visual review with snapshots and videos, and scene debugging.",
   "author": {
     "name": "JuyeongYi",

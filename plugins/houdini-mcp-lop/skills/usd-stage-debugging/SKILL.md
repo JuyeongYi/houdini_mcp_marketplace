@@ -1,6 +1,8 @@
 ---
 name: usd-stage-debugging
-description: Inspect and edit USD stages in Solaris with the houdini_mcp_lop tools - composed prims, attribute values and where they come from, schemas, layers, references, variants, layout (transforms, activation, SOP import), cameras, lights and light linking. Use when geometry, materials or lights are missing or wrong on a LOP stage, when SOP data does not arrive in USD, when laying out or lighting a shot, or before rendering a stage.
+description: "Inspect and edit USD stages in Solaris with the houdini_mcp_lop tools - composed prims, attribute values and where they come from, schemas, layers, references, variants, layout (transforms, activation, SOP import), cameras, lights and light linking."
+when_to_use: "Use when geometry, materials or lights are missing or wrong on a LOP stage, when SOP data does not arrive in USD, when laying out or lighting a shot, or before rendering a stage."
+compatibility: "Needs a GUI Houdini 22+ session running the HoudiniMCP server with the houdini_mcp_lop tool pack loaded."
 ---
 
 # USD stages in Solaris
@@ -25,7 +27,7 @@ LOP node parameters are USD names punycode-encoded (inputs:intensity becomes xn_
 
 ## Editing
 
-Every edit inserts a LOP node after the given node, with your English comment, and rewires downstream connections. Continue the chain from the node it returns. Passing an empty LOP network (`/stage`) creates the first node without an input.
+Every edit inserts a LOP node after the given node, with your English comment, and rewires downstream connections. Continue the chain from the node it returns. `import_sop`, `create_camera`, `create_light` and `create_light_rig` can start an empty LOP network (`/stage`) with a first node that has no input; the other edit tools need an existing stage.
 
 - `set_usd_attribute(lop, primpath, name, value, comment, type_name)` — any attribute. A missing attribute defined by an API schema gets its type from the schema; otherwise give `type_name`.
 - `set_variant`, `add_reference` (`reference_type`: file, payload, prim, inherit, specialize), `add_sublayer`.

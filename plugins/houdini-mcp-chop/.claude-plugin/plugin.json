@@ -1,7 +1,7 @@
 {
   "name": "houdini-mcp-chop",
   "displayName": "Houdini MCP - CHOP",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Skill for analysing and transferring animation channels, loops, spikes, baking and audio with the houdini_mcp_chop tools. Scalar CHOP channels only - KineFX skeleton animation is houdini-mcp-rig.",
   "author": {
     "name": "JuyeongYi",

@@ -1,6 +1,8 @@
 ---
 name: render-and-verify
-description: Set up, run and verify Houdini Karma renders with the houdini_mcp_render tools - render settings and AOVs, pre-render validation, background renders through a USD Render ROP, progress via job_status, cancelling, and pixel-level checks of the results. Use whenever you configure, start, monitor or check a render, or when a render is black, missing frames, blocked or taking over Houdini.
+description: "Set up, run and verify Houdini Karma renders with the houdini_mcp_render tools - render settings and AOVs, pre-render validation, background renders through a USD Render ROP, progress via job_status, cancelling, and pixel-level checks of the results."
+when_to_use: "Use whenever you configure, start, monitor or check a render, or when a render is black, missing frames, blocked or taking over Houdini."
+compatibility: "Needs a GUI Houdini 22+ session running the HoudiniMCP server with the houdini_mcp_render tool pack loaded."
 ---
 
 # Render and verify
@@ -18,7 +20,7 @@ description: Set up, run and verify Houdini Karma renders with the houdini_mcp_r
 
 ## Before rendering
 
-- `validate_render(path)` on the LOP or the USD Render ROP — missing camera, lights, geometry, materials, output path.
+- `validate_render(path)` on the LOP or the USD Render ROP — missing camera, lights, geometry, materials, output path (lights and materials only warn). `start_render` runs the same check itself and refuses on errors.
 - The scene must have been saved once (`save_scene`). Background renders read a copy of the current state; the user's .hip is not overwritten.
 - Do a small check render first: one or two frames, `samples_percent` around 25, or a low `resolution` override.
 
@@ -31,18 +33,18 @@ description: Set up, run and verify Houdini Karma renders with the houdini_mcp_r
 
 - `start_render` creates or reuses a USD Render ROP (`render_<lop name>`) in the scene and renders it in a separate hython process. Give `rop_name` a role-revealing name when you want to keep several.
 - Always pass `frame_range`. Without it only the current frame is rendered; the tool clears the ROP's `$FSTART`/`$FEND` expressions itself.
-- `renderer` must be a token from `list_renderers` (for example `BRAY_HdKarma`, `BRAY_HdKarmaXPU`).
+- `renderer` must be a supported renderer from `list_renderers` (viewport-only delegates such as Storm are listed but refused) (for example `BRAY_HdKarma`, `BRAY_HdKarmaXPU`).
 - Do not press the ROP's "Render to Disk in Background" button and do not render with `run_python`; use the tools above.
 
 ## While rendering
 
-- `job_status(job)` (base pack) — progress from `ALF_PROGRESS`, log tail, and whether the expected output files exist. Poll every few seconds, not in a tight loop.
+- `job_status(job)` (base pack) — per-frame progress from `ALF_PROGRESS`, the log tail, and how many expected output files exist (with up to 20 missing paths). Poll every few seconds, not in a tight loop.
 - `cancel_job(job)` (base pack) — stops the hython process and its husk. Frames already written stay. This render pack has no cancel tool of its own; `cancel_job` cancels a background job from any pack by its id.
 
 ## Verify the output
 
 - `image_info(path, frame)` — resolution, AOVs actually in the file, per-channel statistics; black, NaN, empty-alpha images are flagged in `diagnosis`. Use `stats=False` for a quick AOV list and compare it with `render_settings`.
-- `image_sequence_report(path, start, end)` — missing frames, black frames, flicker across the sequence.
+- `image_sequence_report(path, start, end)` — missing frames, black frames, flicker across the sequence, at most 240 frames per call (`truncated` is set; split longer ranges).
 - `image_preview(path, exposure=...)` — look at a frame.
 - `compare_images(a, b)` — confirm a fix actually changed pixels.
 - For review, turn the sequence into a video with `make_video` (base pack) and send or point the user to it.

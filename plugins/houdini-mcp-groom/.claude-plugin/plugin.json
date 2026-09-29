@@ -1,7 +1,7 @@
 {
   "name": "houdini-mcp-groom",
   "displayName": "Houdini MCP - Groom",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Skill for inspecting grooms and hair cards with the houdini_mcp_groom tools - strand statistics, Guides/Skin/Skin VDB chain wiring checks and card-to-strand fit reports.",
   "author": {
     "name": "JuyeongYi",

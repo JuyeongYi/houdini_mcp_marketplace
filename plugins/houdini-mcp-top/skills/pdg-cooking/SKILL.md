@@ -1,6 +1,8 @@
 ---
 name: pdg-cooking
-description: Cook Houdini TOP (PDG) networks and find out why work items failed with the houdini_mcp_top tools - generate, cook, dirty and cancel, in the foreground, asynchronously in the session or in a background hython, then status counts, failure causes grouped with commands, exit codes and log tails, per-item attributes and outputs, and scheduler slots. Use whenever you build or run a TOP network, a wedge or a batch of ROP fetches, or when work items fail, hang or cook slowly.
+description: "Cook Houdini TOP (PDG) networks and find out why work items failed with the houdini_mcp_top tools - generate, cook, dirty and cancel, in the foreground, asynchronously in the session or in a background hython, then status counts, failure causes grouped with commands, exit codes and log tails, per-item attributes and outputs, and scheduler slots."
+when_to_use: "Use whenever you build or run a TOP network, a wedge or a batch of ROP fetches, or when work items fail, hang or cook slowly."
+compatibility: "Needs a GUI Houdini 22+ session running the HoudiniMCP server with the houdini_mcp_top tool pack loaded."
 ---
 
 # PDG cooking
@@ -12,7 +14,7 @@ TOP networks are built with the base pack (`create_node`, `connect_nodes`, `set_
 ## Start small
 
 1. Set the item count low (a few frames, a few wedges) for the first cook.
-2. `cook_top(path, mode="generate")` — creates the work items without running them. Check the count and, with `work_item_info(path, index=0)`, the attributes each item will get.
+2. `cook_top(path, mode="generate")` — creates the work items without running them. Check the count and, with `work_item_info(<TOP node>, index=0)`, the attributes each item will get (a topnet path takes `id=` instead of `index`).
 3. `cook_top(path, mode="cook")` — cook for real. The result carries per-node state counts; when anything failed its `next` points to `failed_work_items`.
 4. Only then raise the count and cook the full batch.
 
@@ -28,7 +30,7 @@ TOP networks are built with the base pack (`create_node`, `connect_nodes`, `set_
 
 - A blocking cook runs on Houdini's main thread. Past 120 s later tool calls fail with `MainThreadTimeout`. Keep blocking cooks short.
 - `background=True` cooks a snapshot of the current session in a separate hython. The user's .hip is not saved or overwritten (`$HIP` still resolves to the scene's directory); a scene that was never saved is refused, so call `save_scene` once before.
-- A background cook does not fill this session's TOP graph. Poll it with base `job_status(job=...)` (progress, log tail, and the finished summary) and read failures with `failed_work_items(job=...)`. A background hython that dies without writing its summary (no license, crash) is reported as `finished` with an `error` and the log tail; read the tail, fix, and cook again. For a job, `failed_work_items` keeps at most 20 cause groups and 20 log lines per example.
+- A background cook does not fill this session's TOP graph. Poll it with base `job_status(job=...)` (progress, log tail, and the finished summary) and read failures with `failed_work_items(job=...)`. A background hython that dies without writing its summary (no license, crash) shows as `failed` or `exited` in `job_status`, and `failed_work_items(job=...)` returns its `error` and log tail; read the tail, fix, and cook again. For a job, `failed_work_items` keeps at most 20 cause groups and 20 log lines per example.
 - Do not cook TOPs with `run_python` loops. Do not use base `cook_node` on TOP nodes; it does not cook work items.
 
 ## When items fail
@@ -50,4 +52,4 @@ TOP networks are built with the base pack (`create_node`, `connect_nodes`, `set_
 
 ## Files written by work items
 
-Work items that write caches, renders or exports should do it through ROP-based TOPs (ROP Fetch, ROP Geometry Output, USD Render) so the output path lives in the scene. Check the result files with `geometry_stats` (base), and with `probe_file` (io pack) or `image_info` (render pack) if those packs are installed.
+Work items that write caches, renders or exports should do it through ROP-based TOPs (ROP Fetch, ROP Geometry Output, USD Render) so the output path lives in the scene. Check the result files with `probe_file` (io package) or `image_info` (render package); base `geometry_stats` reads a SOP, so load a geometry cache into a File SOP first.

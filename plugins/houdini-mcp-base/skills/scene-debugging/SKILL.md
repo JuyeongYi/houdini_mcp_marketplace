@@ -1,6 +1,8 @@
 ---
 name: scene-debugging
-description: Find out why a Houdini scene is wrong, slow or broken using the base inspection tools - errors, cook order, expensive nodes, references in both directions, geometry over time, background jobs, snapshots and diffs. Use when a node errors or warns, output is empty or unexpected, cooking is slow, files are missing, a background render/cache did not finish, or you need to know what changed.
+description: "Find out why a Houdini scene is wrong, slow or broken using the base inspection tools - errors, cook order, expensive nodes, references in both directions, geometry over time, background jobs, snapshots and diffs."
+when_to_use: "Use when a node errors or warns, output is empty or unexpected, cooking is slow, files are missing, a background render/cache did not finish, or you need to know what changed."
+compatibility: "Needs a GUI Houdini 22+ session running the HoudiniMCP server with the houdini_mcp_base tool pack loaded."
 ---
 
 # Scene debugging
@@ -9,7 +11,7 @@ Work from the symptom to the cause. Prefer reading tools; change nothing until t
 
 ## Errors and wrong output
 
-1. `find_error_nodes` — every node with errors or warnings. The default root is the whole scene (`/obj`, `/out`, `/stage`, `/mat` ...); pass a narrower `root` on big scenes.
+1. `find_error_nodes` — every node with errors or warnings among those that have cooked, up to 500 nodes (check `truncated`). The default root is the whole scene (`/obj`, `/out`, `/stage`, `/mat` ...); pass a narrower `root` on big scenes.
 2. `node_errors` / `explain_node` on the first failing node upstream. `explain_node` combines type, the help summary, parameters that differ from defaults, inputs, errors and comment in one call. If `node_errors` shows `cooked: false`, run `cook_node` first.
 3. `cook_chain` on the output node — what cooks, in what order, to produce it. The broken link is usually the first node whose output stops looking right.
 4. `geometry_stats` / `list_attributes` / `list_groups` at each step to see where points, attributes or groups disappear. Use `output` for nodes with several outputs. Passing an OBJ path reads its display SOP.
@@ -22,7 +24,7 @@ Work from the symptom to the cause. Prefer reading tools; change nothing until t
 
 ## Slow scenes
 
-- `find_expensive_nodes` reports measured cook times. Fix the top entries first.
+- `find_expensive_nodes` reports measured cook times. Fix the top entries first; nodes that never cooked have no time yet (`cook_node` them first).
 - `cook_node(path, cook=False)` reads cook count, last cook time and whether a node is time dependent (recooks every frame) without cooking.
 
 ## Background jobs
@@ -31,7 +33,7 @@ Work from the symptom to the cause. Prefer reading tools; change nothing until t
 
 ## What changed?
 
-- `scene_snapshot(label)` before an experiment, `diff_scene(label)` after. Use it to show the user exactly what you changed, or to find what they changed.
+- `scene_snapshot(label)` before an experiment, `diff_scene(label)` after, to show the user what you changed or to find what they changed. It records node types, comments, inputs and non-default parameters under `/obj` (3 levels) by default - pass `root` for `/stage`, `/mat` or `/out`; flags are not compared.
 
 ## Dependencies and portability
 

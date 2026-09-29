@@ -1,6 +1,8 @@
 ---
 name: materialx-lookdev
-description: Create and debug MaterialX (and Karma/USD Preview) materials with the houdini_mcp_mat tools - shader graphs, textures (including normal and displacement maps), color spaces and material assignment. Use when building or fixing materials, attaching textures, when renders show wrong colors, flat grey or missing bump/displacement, or when an assignment does not seem to apply.
+description: "Create and debug MaterialX (and Karma/USD Preview) materials with the houdini_mcp_mat tools - shader graphs, textures (including normal and displacement maps), color spaces and material assignment."
+when_to_use: "Use when building or fixing materials, attaching textures, when renders show wrong colors, flat grey or missing bump/displacement, or when an assignment does not seem to apply."
+compatibility: "Needs a GUI Houdini 22+ session running the HoudiniMCP server with the houdini_mcp_mat tool pack loaded."
 ---
 
 # MaterialX look development
@@ -12,11 +14,11 @@ description: Create and debug MaterialX (and Karma/USD Preview) materials with t
 1. `create_material(parent, name, comment, kind="materialx")` — comes with the MaterialX standard surface on the surface output and `mtlxdisplacement` on the displacement output. `kind` is one of `materialx` (default, saves to `.mtlx`), `karma`, `usdpreview`, `principled` (legacy Mantra).
 2. Add nodes with base `create_node`, connect them with base `connect_nodes` using **port names** (`input_index="base_color"`, `output_index="out"`) — it checks the VOP data types — and break a link with base `disconnect_input`.
 3. Set shader values with base `set_parms` — colors and vectors go in as lists, e.g. `{"base_color": [0.4, 0.25, 0.1], "specular_roughness": 0.55}`. A value on an input that has a connection is ignored at render time; disconnect first.
-4. Before connecting, read the node's `ports` from base `node_info(path)` — exact input/output names, types and what is already connected (base `node_type_info` gives the same ports for a type you have not created yet). To see the whole shader graph with port names, use base `network_graph(material_path)`; `material_info` adds textures and assignments.
+4. Before connecting, read the node's `ports` from base `node_info(path)` — exact input/output names, types and what is already connected (base `node_type_info` gives the same ports for a type you have not created yet). To see the whole shader graph with port names, use base `network_graph(path)` on the material; `material_info` adds textures and assignments.
 
 ## MaterialX node pitfalls
 
-- Many MaterialX nodes have a **signature menu** that decides their types. The menu is dynamic; set it by token (for example `color3`, `vector2`, `color3FA`, `vector2FA`), then the inputs change to match.
+- Many MaterialX nodes have a **signature menu** that decides their types. The menu is dynamic; set it by token (for example `default` for float, `color3`, `vector2`, `color3FA`, `vector2FA`), then the inputs change to match.
 - Math nodes name inputs `in1`, `in2` (multiply's second input is `in2`), not `a`/`b`.
 - `validate_material` runs the MaterialX library's own validation. Run it after wiring.
 
@@ -44,7 +46,7 @@ description: Create and debug MaterialX (and Karma/USD Preview) materials with t
 
 ## Assignment
 
-- `assign_material(target, material, comment)` works on SOP, OBJ and LOP targets. On SOP/LOP it **inserts** the assign node right after `target` and rewires whatever was downstream (`rewired`), then verifies on the network's display node (reported as verified_at).
+- `assign_material(target, material, comment)` works on SOP, OBJ and LOP targets; for a LOP target the material must live in a `materiallibrary` LOP (or pass its USD prim path, e.g. `/materials/wall_stone`). On SOP/LOP it **inserts** the assign node right after `target` and rewires whatever was downstream (`rewired`), then verifies on the network's display node (reported as verified_at).
 - `verified=false` with a hint that "a downstream node removed/overrode it" means something after the target (attribute delete, another assign) wins. Fix that node rather than assigning again.
 - LOP: give a prim pattern (`prim_pattern="/wall_cube"`); the default `%type:Mesh` does not match `Cube`/`Sphere` gprims.
 - `list_assignments(path)` reads the result (SOP attribute / USD binding), not parameters.

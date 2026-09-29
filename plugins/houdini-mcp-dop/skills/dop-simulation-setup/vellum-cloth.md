@@ -4,7 +4,7 @@ Measured on Houdini 22.0 while building a looping flag simulation.
 
 ## Geometry
 
-- Remesh the cloth to **uniform triangles** (`remesh_geometry` with a `target_size`); quads or uneven triangles wrinkle unevenly.
+- Remesh the cloth to **uniform triangles** (`remesh_geometry` from the `sop` package, with a `target_size`); quads or uneven triangles wrinkle unevenly.
 - Create the pin group on the points to hold (for a flag, the edge at the pole).
 
 ## Constraints (SOP side)
@@ -14,7 +14,7 @@ Measured on Houdini 22.0 while building a looping flag simulation.
 
 ## DOP network
 
-- `add_dop_object(dopnet, "vellumobject", comment, source_object="<cloth geo>", constraints_sop="<constraints null>")` — the Vellum object has no soppath; the tool sets `displaysoppath` (Initial Geometry) to the source object's display and `constraintsoppath` (Initial Constraints) to `constraints_sop`, wires it into input 0 of the Vellum solver and creates a DOP Import read-back.
+- `add_dop_object(dopnet, "vellumobject", comment, source_object="<cloth geo>", constraints_sop="<constraints null>")` — the Vellum object has no soppath; the tool adds a `TO_DOPS` null after the source object's display SOP and points `displaysoppath` (Initial Geometry) at it, sets `constraintsoppath` (Initial Constraints) to `constraints_sop`, feeds the object into input 0 of the Vellum solver and creates a DOP Import read-back in the source object (its display flag is left alone).
 - Wind: `add_dop_force(dopnet, "popwind", comment, parms={"wind": [3, 0, 0]})` — routed into **input 1** of the Vellum solver (Particle Forces). Its wind is the vector parm `wind`.
 - Gravity stays after the solver in the chain (create_dopnet adds it).
 - Continuous emission instead of a single initial state: `add_sim_source(dopnet, "<cloth geo null>", "<vellum object>", comment, constraints_sop=..., parms={"emittype": "continuous"})` adds a Vellum Source on the solver's Post-Solve input.

@@ -62,6 +62,8 @@ plugins/<plugin>/
 | `houdini-mcp-chop` | `houdini_mcp_chop` | `channel-analysis` | |
 | `houdini-mcp-io` | `houdini_mcp_io` | `export-and-verify` | |
 | `houdini-mcp-cop` | `houdini_mcp_cop` | `copernicus-textures` | |
+| `houdini-mcp-top` | `houdini_mcp_top` | `pdg-cooking` | |
+| `houdini-mcp-groom` | `houdini_mcp_groom` | `groom-inspection` | |
 
 ## Staying in step with the tools
 
@@ -87,3 +89,8 @@ Run both after editing a skill and after changing tools in HoudiniMCP.
   live in each pack's generated `README.md` in HoudiniMCP; a skill explains when and how to use tools,
   not every argument.
 - Tools are named bare (`make_video`), without a prefix: the prefix depends on how the server is connected.
+- Skill frontmatter: `name`, `description` (what it does), `when_to_use` (when), `compatibility` (the pack it needs).
+- Subagent frontmatter: `tools` opens only Read/Grep/Glob, `ToolSearch` (loads deferred MCP tools) and the Houdini server's tools, under both prefixes -
+  the plugin connection (`mcp__plugin_houdini-mcp_houdini__*`) and a project `.mcp.json` server keyed `houdini`
+  (`mcp__houdini__*`). A server under another key is invisible to the agents. `run_python` is blocked with
+  `disallowedTools`; `model` and `effort` are set per job (sonnet for mechanical checks, opus for diagnosis).

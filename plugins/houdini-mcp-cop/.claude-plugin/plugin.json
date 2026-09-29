@@ -1,7 +1,7 @@
 {
   "name": "houdini-mcp-cop",
   "displayName": "Houdini MCP - COP",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Skill for building Copernicus (COP) textures and checking every step as images and numbers with the houdini_mcp_cop tools.",
   "author": {
     "name": "JuyeongYi",

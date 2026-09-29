@@ -43,12 +43,13 @@
     {
       "name": "houdini-mcp-vex",
       "source": "./plugins/houdini-mcp-vex",
-      "description": "Writing and validating VEX wrangles with the vcc compiler (houdini_mcp_vex).",
+      "description": "Writing and validating VEX wrangles with the vcc compiler, and diagnosing OpenCL kernels (houdini_mcp_vex).",
       "category": "houdini",
       "keywords": [
         "houdini",
         "vex",
-        "wrangle"
+        "wrangle",
+        "opencl"
       ]
     },
     {
@@ -144,14 +145,15 @@
     {
       "name": "houdini-mcp-io",
       "source": "./plugins/houdini-mcp-io",
-      "description": "Exporting and importing USD, Alembic, FBX and geometry with read-back verification (houdini_mcp_io).",
+      "description": "Exporting and importing USD, Alembic, FBX, glTF and geometry with read-back verification (houdini_mcp_io).",
       "category": "houdini",
       "keywords": [
         "houdini",
         "export",
         "usd",
         "alembic",
-        "fbx"
+        "fbx",
+        "gltf"
       ]
     },
     {

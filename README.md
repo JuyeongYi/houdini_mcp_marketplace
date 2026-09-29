@@ -60,6 +60,8 @@ plugins/<플러그인>/
 | `houdini-mcp-chop` | `houdini_mcp_chop` | `channel-analysis` | |
 | `houdini-mcp-io` | `houdini_mcp_io` | `export-and-verify` | |
 | `houdini-mcp-cop` | `houdini_mcp_cop` | `copernicus-textures` | |
+| `houdini-mcp-top` | `houdini_mcp_top` | `pdg-cooking` | |
+| `houdini-mcp-groom` | `houdini_mcp_groom` | `groom-inspection` | |
 
 ## 툴과 어긋나지 않게
 
@@ -84,3 +86,8 @@ claude plugin validate plugins/houdini-mcp-dop --strict
 - 스킬은 Houdini 에서 실측한 것이나 툴이 스스로 말하는 것만 적는다. 툴 목록과 인자는 HoudiniMCP 의
   팩별 `README.md`(생성물)에 있으니, 스킬은 언제·어떻게 쓰는지를 설명하고 인자를 나열하지 않는다.
 - 툴 이름은 접두사 없이 맨 이름으로 적는다(`make_video`). 접두사는 서버를 어떻게 연결했는지에 따라 다르다.
+- 스킬 프론트매터: `name`, `description`(무엇을 하는지), `when_to_use`(언제 쓰는지), `compatibility`(필요한 팩).
+- 서브에이전트 프론트매터: `tools` 는 Read/Grep/Glob, `ToolSearch`(지연 로딩된 MCP 툴을 불러온다)와 Houdini 서버 툴만 연다. 서버 접두사는 플러그인 연결
+  (`mcp__plugin_houdini-mcp_houdini__*`)과 프로젝트 `.mcp.json` 의 `houdini` 키(`mcp__houdini__*`) 두 가지를 적는다.
+  서버 키를 다르게 붙였다면 에이전트가 툴을 못 본다. `run_python` 은 `disallowedTools` 로 막고, `model`·`effort` 는
+  일의 성격에 맞춰 명시한다(기계적 점검은 sonnet, 원인 진단은 opus).

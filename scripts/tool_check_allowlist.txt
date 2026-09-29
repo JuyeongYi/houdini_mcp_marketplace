@@ -12,3 +12,7 @@ kma_pyroshader
 rop_image
 wall_body
 attribute_mismatch
+all_verified
+existing_normals
+missing_channel_parms
+unresolved_channel_refs

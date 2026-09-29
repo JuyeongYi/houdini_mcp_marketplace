@@ -1,7 +1,7 @@
 {
   "name": "houdini-mcp-hda",
   "displayName": "Houdini MCP - HDA",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Skill for authoring, validating, installing and version-controlling Houdini Digital Assets with the houdini_mcp_hda tools.",
   "author": {
     "name": "JuyeongYi",

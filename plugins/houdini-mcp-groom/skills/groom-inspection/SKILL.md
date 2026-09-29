@@ -1,6 +1,8 @@
 ---
 name: groom-inspection
-description: Inspect Houdini grooms and hair cards with the houdini_mcp_groom tools - strand counts, length and width distributions and bad strands, Guides/Skin/Skin VDB stream wiring along a groom chain, and how well a hair card mesh covers the source strands. Use when building or debugging a groom (Guide Groom, Guide Process, Hair Clump, Hair Gen), checking guides or hair before card generation, or comparing hair card results (Hair Card Generate, a hair card HDA, hand-made cards).
+description: "Inspect Houdini grooms and hair cards with the houdini_mcp_groom tools - strand counts, length and width distributions and bad strands, Guides/Skin/Skin VDB stream wiring along a groom chain, and how well a hair card mesh covers the source strands."
+when_to_use: "Use when building or debugging a groom (Guide Groom, Guide Process, Hair Clump, Hair Gen), checking guides or hair before card generation, or comparing hair card results (Hair Card Generate, a hair card HDA, hand-made cards)."
+compatibility: "Needs a GUI Houdini 22+ session running the HoudiniMCP server with the houdini_mcp_groom tool pack loaded."
 ---
 
 # Groom inspection
@@ -17,7 +19,7 @@ There are no per-step hair card tools. The hair card pipeline lives in an HDA: d
 
 - curve count and non-curve prims mixed in (a skin mesh merged into the guides shows up here),
 - length distribution and histogram, points per curve and whether every curve has the same count,
-- width ranges for `width_attribs` (default width, pscale, thickness; point or prim),
+- width ranges for `width_attribs` (default width, pscale, thickness; point or prim), always over the whole geometry even when `group` is set,
 - root bounding box,
 - anomalies with prim numbers: zero-length strands, NaN/Inf positions, one-point strands.
 

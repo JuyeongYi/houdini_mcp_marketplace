@@ -1,6 +1,8 @@
 ---
 name: export-and-verify
-description: Export Houdini geometry and stages to disk through named ROPs and bring files in, verifying every file by reading it back, with the houdini_mcp_io tools - native geometry caches, USD, Alembic, FBX, glTF, file probing, FBX scene import and scene merging. Use when writing geometry or USD for another tool, DCC or game engine, importing external files, or when an exported file looks empty or wrong elsewhere.
+description: "Export Houdini geometry and stages to disk through named ROPs and bring files in, verifying every file by reading it back, with the houdini_mcp_io tools - native geometry caches, USD, Alembic, FBX, glTF, file probing, FBX scene import and scene merging."
+when_to_use: "Use when writing geometry or USD for another tool, DCC or game engine, importing external files, or when an exported file looks empty or wrong elsewhere."
+compatibility: "Needs a GUI Houdini 22+ session running the HoudiniMCP server with the houdini_mcp_io tool pack loaded."
 ---
 
 # Export and import with verification
@@ -24,7 +26,7 @@ Start with `export_formats`: it says which tool writes which format, which ROP i
 - Every export tool requires `comment` (English): the ROP stays in the scene with that comment, so a person can rerun the same output later. Exporting the same node again reuses its ROP instead of piling up new ones.
 - Do not write `.usd`, `.abc`, `.fbx` or `.gltf` through `write_geometry`: a geometry save accepts those extensions but writes ASCII `.geo` content. It refuses them and names the right tool.
 - Do not write files with `run_python` (`saveToFile`, pxr `Export`). Disk output goes through these ROP tools.
-- `export_usd(flatten=True)` writes a self-contained file; `False` keeps file references that break if the file moves. Keep `set_metadata=True` so `upAxis` and `defaultPrim` are authored; `run_usdchecker=True` for delivery. `.usdz` is not written by the USD ROP: write `.usd`, then package it.
+- `export_usd(flatten=True)` writes a self-contained file; `False` keeps file references that break if the file moves. Keep `set_metadata=True` so `upAxis` and `metersPerUnit` are authored (a SOP source also gets `defaultPrim`; for a LOP stage pass `default_prim`); `run_usdchecker=True` for delivery. `.usdz` is not written by the USD ROP: write `.usd`, then package it.
 - On an Apprentice license USD ROPs write `.usdnc` instead of `.usd` (the result carries a license note), and Alembic/FBX export is refused before any node is made. glTF works on every license.
 - `export_fbx`: give an OBJ to export that subtree, a SOP to export only that SOP. `convert_units=True` converts meters to FBX centimeters; `axis` picks the axis system (`yupright`, `yupleft`, `zupright`, `currentup`). Binary is the default; `ascii_format=True` only for debugging.
 - `export_gltf`: give a SOP to export only that SOP, or an OBJ to export that object and the objects parented under it. A subnet is accepted only when it has one root object: the Houdini glTF ROP writes just the last root-level object and drops the rest, so a multi-root subnet is refused. Export each object separately, parent them under one geometry object, or gather them with an Object Merge SOP and export that SOP. The verification also checks that the object's glTF node is present and that the scene lists a root node.
@@ -34,12 +36,12 @@ Start with `export_formats`: it says which tool writes which format, which ROP i
 
 - `frame_range` is `[start, end]` or `[start, end, step]`; omit it for the current frame. It overrides the ROP's `$FSTART`/`$FEND` range. `write_geometry` needs a frame token (`$F4`) in the path for a range; Alembic, USD and FBX store time samples in one file.
 - Try one or two frames first. Long ranges in the foreground hit the 120-second main-thread limit, and more than 500 frames is refused in the foreground.
-- `background=True` snapshots the current session to a copy in the job directory (the user's .hip is not saved or overwritten), starts a separate hython on the same ROP and returns at once with a `job` id and no verification. Follow it with `job_status(job)`, then `probe_file` on the output. It needs a scene that has been saved once.
+- `background=True` snapshots the current session to a copy in the job directory (the user's .hip is not saved or overwritten), starts a separate hython on the same ROP and returns at once with `job` (its `job` field is the id for `job_status`) and no verification. Follow it with `job_status`, then `probe_file` on the output. It needs a scene that has been saved once.
 - Existing files are not overwritten unless `overwrite=True`.
 
 ## Read the verification
 
-Check `verified` and `verification.mismatches` against the source. A mismatch is reported, not raised: read it. `.obj`, `.ply`, `.stl` and `.vdb` are marked `lossy` because their counts legitimately change on a round trip. An empty file never passes.
+Check `verified` and `verification.mismatches` against the source (`write_geometry` reports `all_verified` and a `verification` per file in `files`). A mismatch is reported, not raised: read it. `.obj`, `.ply`, `.stl` and `.vdb` are marked `lossy` because their counts legitimately change on a round trip. An empty file never passes.
 
 ## Import
 

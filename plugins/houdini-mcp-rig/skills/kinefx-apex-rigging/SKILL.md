@@ -1,6 +1,8 @@
 ---
 name: kinefx-apex-rigging
-description: Build, animate and check character rigs in Houdini with the houdini_mcp_rig tools - FBX character import and export, KineFX skeletons and poses, skin capture, weight analysis and repair, MotionClips, retargeting, APEX rig graphs (read, decompile, write via APEX Script) and rig validation. Use when importing or exporting an FBX character, creating or inspecting a skeleton, skinning a mesh, fixing weights or deformation problems, retargeting mocap, reading or writing APEX rigs, or validating a rig before export.
+description: "Build, animate and check character rigs in Houdini with the houdini_mcp_rig tools - FBX character import and export, KineFX skeletons and poses, skin capture, weight analysis and repair, MotionClips, retargeting, APEX rig graphs (read, decompile, write via APEX Script) and rig validation."
+when_to_use: "Use when importing or exporting an FBX character, creating or inspecting a skeleton, skinning a mesh, fixing weights or deformation problems, retargeting mocap, reading or writing APEX rigs, or validating a rig before export."
+compatibility: "Needs a GUI Houdini 22+ session running the HoudiniMCP server with the houdini_mcp_rig tool pack loaded."
 ---
 
 # KineFX and APEX rigging
@@ -11,11 +13,11 @@ This pack owns **KineFX animation end to end**: FBX character import, MotionClip
 
 ## Character in -> retarget -> character out
 
-1. `import_character(fbx_file, comment, parent="/obj", name)` — places `kinefx::fbxcharacterimport` and one null per output: `<name>_rest_geometry` (skin with `boneCapture`), `<name>_capture_pose` (bind skeleton), `<name>_animated_pose` (animation, with `clipinfo`). Read the report: missing_outputs, weight summary, joint name mismatches, `clip.frame_range`, animated_joints. An animation-only FBX (mocap) yields only `animated_pose`; pass `animation_file` to combine a character with separate motion.
+1. `import_character(fbx_file, comment, parent="/obj", name)` — places `kinefx::fbxcharacterimport` and one null per output: `<name>_rest_geometry` (skin with `boneCapture`), `<name>_capture_pose` (bind skeleton), `<name>_animated_pose` (animation, with `clipinfo`). Read the report: missing_outputs, weight summary, joint name mismatches, `clip.frame_range`, animated_joints. An animation-only FBX (mocap) yields only `animated_pose`; pass `animation_file` to combine a character with separate motion. Tools that take two SOPs (retargeting, skinning, deforming, export) refuse inputs from different networks, so import a separate mocap into the character's geo node (`parent=<that geo>`), not into a new geo under `/obj`.
 2. `validate_rig(skeleton=<capture_pose>, skin=<rest_geometry>)` before touching anything.
 3. `retarget_skeleton(source=<mocap animated_pose>, target=<character capture_pose>, comment, mapping)` — builds `rigmatchpose -> mappoints -> fullbodyik -> null`. `mapping` is `{target joint: source joint}`; without it joints pair by name (ignoring namespaces and case). Different naming schemes need an explicit mapping — check unmapped_target.
-4. `retarget_report(source, target=<retarget out>, frame_range)` — per-frame world-rotation error per mapped joint (degrees), root drift as a fraction of height, and foot sliding compared with the source. Fix the mapping for the worst_joints first.
-5. `export_character_fbx(path=<rest_geometry>, capture_pose, animated_pose, file, comment, frame_range)` — ROP FBX Character Output, left in the scene under `name` (default fbx_character_out) and reused on later calls. Always pass `frame_range` for animation; take it from `clip.frame_range` and try 1-2 frames first. Without a range on an animated character the tool refuses instead of cooking the whole timeline. Apprentice licences cannot write FBX; the error says so.
+4. `retarget_report(source, target=<retarget out>, frame_range)` — how far each mapped joint's world rotation drifts from the source's since the first frame (degrees: mean, max, worst frame and the ten worst_joints, over at most 120 sampled frames), root drift as a fraction of height, and foot sliding compared with the source. Fix the mapping for the worst_joints first.
+5. `export_character_fbx(path=<rest_geometry>, capture_pose, animated_pose, file, comment, frame_range)` — ROP FBX Character Output, left in the scene under `name` (default fbx_character_out) and reused on later calls. Always pass `frame_range` for animation; take it from `clip.frame_range` and try 1-2 frames first. Without it a new ROP is refused rather than cooking the whole timeline, but a reused ROP exports whatever range it already holds. Apprentice licences cannot write FBX; the error says so.
 
 ## MotionClips
 
@@ -25,7 +27,7 @@ This pack owns **KineFX animation end to end**: FBX character import, MotionClip
 ## Skeleton
 
 1. `create_skeleton(parent, joints, comment)` — joints as `{name, position, parent}`; names must be unique and English.
-2. `skeleton_info(path)` — hierarchy summary. `skeleton_info(path, attributes=True)` adds each point attribute with its KineFX role and sample values. `list_joints(pattern)`, `joint_info(joint)` for details.
+2. `skeleton_info(path)` — hierarchy summary. `skeleton_info(path, attributes=True)` adds each point attribute with its KineFX role and sample values. `list_joints(path, pattern)`, `joint_info(path, joint)` for details.
 3. `pose_joints(path, poses, comment, space="local")` — one `kinefx::rigpose`, joints picked by name, descendants follow. `space="world"` rotates about world axes (values are baked from the current pose; re-run if upstream changes).
 4. `compare_poses(path, reference, mapping)` — how far paired joints moved in one frame; pass `mapping` when names differ. For motion across frames use `retarget_report`.
 
@@ -48,4 +50,4 @@ This pack owns **KineFX animation end to end**: FBX character import, MotionClip
 
 ## Validate
 
-`validate_rig(skeleton, skin, max_influences=4)` checks hierarchy, names, joint orientation, weight sums and bind pose in one pass, with a fix for every finding (most point at `fix_weights`). Run it after import, after weight fixes, and before exporting (game engines usually allow 4 influences).
+`validate_rig(skeleton, skin, max_influences=4)` checks hierarchy, names, joint orientation, weight sums and bind pose in one pass, with a fix for every finding (weight findings point at `fix_weights`). Run it after import, after weight fixes, and before exporting (game engines usually allow 4 influences).
