@@ -5,6 +5,8 @@ description: Build, animate and check character rigs in Houdini with the houdini
 
 # KineFX and APEX rigging
 
+> These tools are in the `rig` package, which is not loaded by default. If they are not in your tool list, call `load_package("rig")` first (`get_entries` shows every package).
+
 This pack owns **KineFX animation end to end**: FBX character import, MotionClips, retargeting and FBX character export. The data is SOP skeletons, so it lives here. CHOP channels and channel analysis (`channel_stats` and friends) belong to the CHOP pack.
 
 ## Character in -> retarget -> character out

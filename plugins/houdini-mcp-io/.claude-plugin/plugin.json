@@ -1,7 +1,7 @@
 {
   "name": "houdini-mcp-io",
   "displayName": "Houdini MCP - Import/Export",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Skill for exporting USD, Alembic, FBX, glTF and native geometry through named ROPs with read-back verification, and importing files and FBX scenes, using the houdini_mcp_io tools.",
   "author": {
     "name": "JuyeongYi",

@@ -5,6 +5,8 @@ description: Write, compile-check and debug VEX wrangle code and OpenCL SOP kern
 
 # VEX wrangles and OpenCL kernels
 
+> These tools are in the `vex` package, which is not loaded by default. If they are not in your tool list, call `load_package("vex")` first (`get_entries` shows every package).
+
 ## Find the function first, don't guess
 
 - Know the exact name already? `vex_function_info(name=...)` gives the vcc

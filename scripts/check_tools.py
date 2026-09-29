@@ -6,7 +6,8 @@ seam. It reads the tool inventory straight from the HoudiniMCP source (its own A
 `scripts/gen_pack_readmes.py`, no Houdini needed) and scans every Markdown file under
 `plugins/` for backticked snake_case identifiers.
 
-An identifier passes when it is a tool name or a tool argument name. Anything else must be
+An identifier passes when it is a tool name, a tool argument name or a package key (`sop`,
+`dop_rbd` ... - read from the same source, so a new package needs no edit here). Anything else must be
 listed in `scripts/tool_check_allowlist.txt` (node names used as examples, Houdini node types
 such as `block_begin`), one per line. Unknown identifiers fail the check so a renamed tool is
 caught before the plugin ships.
@@ -37,8 +38,8 @@ TOKEN = re.compile(r"`([a-z][a-z0-9]*(?:_[a-z0-9]+)+)`")
 """A backticked lowercase identifier with at least one underscore - how skills name tools."""
 
 
-def inventory(mcp_repo: Path) -> tuple[set[str], set[str]]:
-    """(tool names, argument names) from the HoudiniMCP source, via its own README generator."""
+def inventory(mcp_repo: Path) -> tuple[set[str], set[str], set[str]]:
+    """(tool names, argument names, package keys) from the HoudiniMCP source, via its own README generator."""
     script = mcp_repo / "scripts" / "gen_pack_readmes.py"
     if not script.is_file():
         raise SystemExit(f"HoudiniMCP checkout not found: {script}. Pass --mcp-repo.")
@@ -49,12 +50,16 @@ def inventory(mcp_repo: Path) -> tuple[set[str], set[str]]:
     spec.loader.exec_module(module)
     tools: set[str] = set()
     args: set[str] = set()
+    keys: set[str] = set()
+    prefix = f"{module.SERVER_PACKAGE}_"
     for pack in module.load_packs():
+        if pack.name.startswith(prefix):
+            keys.add(pack.name.removeprefix(prefix))  # the key load_package takes
         for mod in pack.modules:
             for tool in mod.tools:
                 tools.add(tool.name)
                 args.update(arg.name for arg in tool.args)
-    return tools, args
+    return tools, args, keys
 
 
 def load_allowlist() -> set[str]:
@@ -113,13 +118,13 @@ def main() -> int:
                         help="HoudiniMCP checkout to read the tool inventory from")
     parsed = parser.parse_args()
 
-    tools, args = inventory(parsed.mcp_repo.resolve())
+    tools, args, keys = inventory(parsed.mcp_repo.resolve())
     problems = check_catalog()
-    tool_problems, used = check_tools(tools, args, load_allowlist())
+    tool_problems, used = check_tools(tools, args, load_allowlist() | keys)
     problems.extend(tool_problems)
 
     referenced = set().union(*used.values()) if used else set()
-    print(f"inventory: {len(tools)} tools, {len(args)} arguments from {parsed.mcp_repo}")
+    print(f"inventory: {len(tools)} tools, {len(args)} arguments, {len(keys)} packages from {parsed.mcp_repo}")
     print(f"plugins reference {len(referenced)} distinct tools; "
           f"{len(tools - referenced)} tools are not mentioned by any skill or agent")
     for problem in problems:

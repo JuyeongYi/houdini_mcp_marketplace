@@ -5,6 +5,8 @@ description: Build and edit SOP geometry procedurally with the houdini_mcp_sop t
 
 # Procedural SOP modelling
 
+> These tools are in the `sop` package, which is not loaded by default. If they are not in your tool list, call `load_package("sop")` first (`get_entries` shows every package).
+
 ## Build in small measured steps
 
 Every editing tool in this pack cooks the new node and returns before/after statistics. Read them after each call:

@@ -5,6 +5,8 @@ description: Create and debug MaterialX (and Karma/USD Preview) materials with t
 
 # MaterialX look development
 
+> These tools are in the `mat` package, which is not loaded by default. If they are not in your tool list, call `load_package("mat")` first (`get_entries` shows every package).
+
 ## Build
 
 1. `create_material(parent, name, comment, kind="materialx")` — comes with the MaterialX standard surface on the surface output and `mtlxdisplacement` on the displacement output. `kind` is one of `materialx` (default, saves to `.mtlx`), `karma`, `usdpreview`, `principled` (legacy Mantra).

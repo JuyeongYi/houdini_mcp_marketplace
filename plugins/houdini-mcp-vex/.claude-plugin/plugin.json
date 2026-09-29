@@ -1,7 +1,7 @@
 {
   "name": "houdini-mcp-vex",
   "displayName": "Houdini MCP - VEX",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Skill for writing, compiling and diagnosing VEX wrangles and OpenCL kernels with the houdini_mcp_vex tools.",
   "author": {
     "name": "JuyeongYi",

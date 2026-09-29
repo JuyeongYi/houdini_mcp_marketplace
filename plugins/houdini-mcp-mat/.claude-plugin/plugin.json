@@ -1,7 +1,7 @@
 {
   "name": "houdini-mcp-mat",
   "displayName": "Houdini MCP - Materials",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Skill for MaterialX look development, texture checks, color spaces and material assignment with the houdini_mcp_mat tools.",
   "author": {
     "name": "JuyeongYi",

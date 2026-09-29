@@ -5,6 +5,8 @@ description: Cook Houdini TOP (PDG) networks and find out why work items failed 
 
 # PDG cooking
 
+> These tools are in the `top` package, which is not loaded by default. If they are not in your tool list, call `load_package("top")` first (`get_entries` shows every package).
+
 TOP networks are built with the base pack (`create_node`, `connect_nodes`, `set_parms`) inside a topnet. Give every node a name that says what it does (for example render_frames or wedge_seeds), not genericgenerator1. This pack does what only PDG has: cooking and work items.
 
 ## Start small

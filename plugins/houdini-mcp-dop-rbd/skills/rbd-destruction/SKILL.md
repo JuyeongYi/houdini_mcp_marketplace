@@ -5,6 +5,8 @@ description: Set up and diagnose rigid-body destruction in Houdini with the houd
 
 # RBD destruction
 
+> These tools are in the `dop_rbd` package, which is not loaded by default. If they are not in your tool list, call `load_package("dop_rbd")` first (`get_entries` shows every package).
+
 This pack diagnoses dopnet-based RBD only. The SOP-level "RBD Bullet Solver"
 node (`rbdbulletsolver`) hides its own dopnet inside itself, so these tools
 cannot see into it and reject it outright. Build a dopnet with a Bullet RBD

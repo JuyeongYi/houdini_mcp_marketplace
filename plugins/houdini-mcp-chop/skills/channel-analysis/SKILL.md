@@ -5,6 +5,8 @@ description: Analyse, filter, transfer and bake animation channels in Houdini wi
 
 # Channel analysis
 
+> These tools are in the `chop` package, which is not loaded by default. If they are not in your tool list, call `load_package("chop")` first (`get_entries` shows every package).
+
 Treat channels as data to be judged, not lists of numbers to read. Setting a single key or expression is the base pack's `anim` tools; this pack is for analysis and bulk transfer of **scalar CHOP channels** only.
 
 **Boundary with rig**: KineFX skeleton animation - MotionClip creation/evaluation, retargeting, character FBX import/export - belongs entirely to `houdini-mcp-rig` (its `kinefx-apex-rigging` skill). This pack never touches MotionClips or skeletons; it only analyses `hou.Track` scalar channels. The one overlap: once rig has pulled a skeleton channel out as a CHOP, analyse it here with `channel_stats`.

@@ -5,6 +5,8 @@ description: Build, test, cache and debug Houdini simulations as DOP networks wi
 
 # DOP simulations
 
+> These tools are in the `dop` package, which is not loaded by default. If they are not in your tool list, call `load_package("dop")` first (`get_entries` shows every package).
+
 ## Build the DOP network directly
 
 Set simulations up as an explicit DOP network (dopnet → objects → solver → sources → forces), not as SOP-level solver shortcuts (Pyro/Vellum/FLIP/RBD Bullet Solver SOPs). The tools only work on dopnets, and every object, source and force stays visible and inspectable.

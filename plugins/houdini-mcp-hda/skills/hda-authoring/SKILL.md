@@ -5,6 +5,8 @@ description: Turn Houdini subnets into Digital Assets and maintain them with the
 
 # HDA authoring
 
+> These tools are in the `hda` package, which is not loaded by default. If they are not in your tool list, call `load_package("hda")` first (`get_entries` shows every package).
+
 This pack's own Python tools do not import the base tool pack — every tool
 below is self-contained (definition-level HDA editing: create, interface,
 sections, options, validation). But editing the **contents** of an

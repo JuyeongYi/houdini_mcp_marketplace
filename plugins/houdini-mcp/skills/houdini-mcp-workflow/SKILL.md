@@ -13,7 +13,7 @@ Each tool's MCP description is its full docstring, and every argument carries it
 
 1. `scene_info` — scene path, unsaved changes, frame range, current frame.
 2. `network_overview` on the network you will work in, then `explain_node` on nodes you plan to touch.
-3. `list_packs` — which tool packs are loaded, their tools, and modules that failed to load. If a tool you expect is missing, its package (`houdini_mcp_<domain>`) is not installed or failed to load; say so instead of emulating it with `run_python`. `describe_tool` gives one tool's full description and arguments.
+3. Packages: only the base package is loaded at start. `get_entries` lists every package (key, description, tools - even unloaded ones). Load what the task needs with `load_package(key)` (for example `sop`, `dop`, `lop`); only a few fit at once, so `unload_package` ones you are done with. The new tools appear in your tool list right after loading. If a tool you expect is in no entry, its package is not installed or failed to load (`failed` in the entry); say so instead of emulating it with `run_python`. `describe_tool` gives one loaded tool's full description and arguments.
 
 ## Look up names, don't guess them
 

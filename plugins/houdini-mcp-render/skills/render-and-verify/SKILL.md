@@ -5,6 +5,8 @@ description: Set up, run and verify Houdini Karma renders with the houdini_mcp_r
 
 # Render and verify
 
+> These tools are in the `render` package, which is not loaded by default. If they are not in your tool list, call `load_package("render")` first (`get_entries` shows every package).
+
 ## Set up the render settings
 
 1. `list_aov_sources(pattern=...)` — AOV names this Houdini install really has (Karma toggles and Extra Render Vars with their source names). Do not guess AOV names from memory.

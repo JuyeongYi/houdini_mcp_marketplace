@@ -5,6 +5,8 @@ description: Build procedural textures in Houdini Copernicus (copnet) and check 
 
 # Copernicus textures
 
+> These tools are in the `cop` package, which is not loaded by default. If they are not in your tool list, call `load_package("cop")` first (`get_entries` shows every package).
+
 Only Copernicus networks (`copnet`) are supported, not legacy COP2 (`cop2net`).
 
 ## Look at every step

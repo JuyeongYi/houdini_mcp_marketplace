@@ -5,6 +5,8 @@ description: Inspect Houdini grooms and hair cards with the houdini_mcp_groom to
 
 # Groom inspection
 
+> These tools are in the `groom` package, which is not loaded by default. If they are not in your tool list, call `load_package("groom")` first (`get_entries` shows every package).
+
 The groom pack only measures. It builds nothing and leaves no nodes in the scene; the math runs in VEX on a copy of the geometry. Build and rewire with the base tools (`create_node`, `set_parms`, `connect_nodes`), then measure again with these tools.
 
 There are no per-step hair card tools. The hair card pipeline lives in an HDA: drive it through its parameters, then judge each stage's output with the tools below.

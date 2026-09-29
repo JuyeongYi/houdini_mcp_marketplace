@@ -5,6 +5,8 @@ description: Inspect and edit USD stages in Solaris with the houdini_mcp_lop too
 
 # USD stages in Solaris
 
+> These tools are in the `lop` package, which is not loaded by default. If they are not in your tool list, call `load_package("lop")` first (`get_entries` shows every package).
+
 ## Query the composed stage, not node parameters
 
 These tools read the `pxr.Usd.Stage` a LOP node produces, after sublayers, references, payloads, variants and inherits have been applied. Node parameters can say one thing while the composed stage says another.

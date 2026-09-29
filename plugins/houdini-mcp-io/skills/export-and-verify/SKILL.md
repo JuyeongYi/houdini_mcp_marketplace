@@ -5,6 +5,8 @@ description: Export Houdini geometry and stages to disk through named ROPs and b
 
 # Export and import with verification
 
+> These tools are in the `io` package, which is not loaded by default. If they are not in your tool list, call `load_package("io")` first (`get_entries` shows every package).
+
 Never trust that a write succeeded because it did not raise. Every export tool here writes through a ROP, then reopens the file with a reader for its format and compares counts.
 
 ## Pick the right tool
