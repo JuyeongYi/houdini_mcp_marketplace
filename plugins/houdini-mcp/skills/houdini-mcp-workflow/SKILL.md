@@ -35,6 +35,10 @@ Each tool's MCP description is its full docstring, and every argument carries it
 - `comment` is required when creating nodes. Write it, node names and any string that ends up in the scene in **English**.
 - Name nodes by role (`wall_body`, `flag_pin_edge`), never `box1`.
 - Each node or parameter edit is **one undo step** (shown as `MCP: ...` in the undo history; `describe_tool` shows whether a tool is undoable). Scene loads, saves, `set_frame_range` and files written to disk are not undone by Ctrl+Z.
+- Three or more connected nodes: build them with one `create_network` call instead of repeated `create_node`. It is all-or-nothing (a wrong type, parameter or input removes every node of the call) and `dry_run=True` validates without touching the scene. Inputs refer to other nodes of the same call by `name`, in any order.
+- Took a wrong step: `undo` takes back your last tool call exactly (node, parameters, wiring, flags), `redo` re-applies it. `undo` stops at changes the user made by hand unless they agree (`allow_user_changes=True`).
+- Many edits on a heavy network or simulation: `set_update_mode("manual")` first so each edit does not recook, and **always** set it back to `"auto"` when done.
+- HDA parameters that rebuild something in a callback: `set_parms(..., run_callbacks=True)`. Setting a value by script does not fire callbacks.
 - Tool errors are written to be acted on: read the message, it says what to do next.
 
 ## Output goes through ROPs
@@ -56,3 +60,6 @@ Each tool's MCP description is its full docstring, and every argument carries it
 ## Verify, don't assume
 
 After building or changing something, look at it (`viewport_snapshot`, `viewport_sequence`) and read numbers (`geometry_stats`, `node_errors`). See the `visual-review` skill.
+
+- Same attribute across several nodes or frames: `attrib_stats(paths=[...], frames=[...])` returns one compact table; `percentiles=[1, 50, 99]` shows outliers.
+- Volumes: `sample_volume` reads fields at positions and `compare_volumes` shows how one field sits in the value bands of another. The `sampling` method changes the number: `index` is the stored voxel value unblended, `linear` (default) is trilinear, `smooth` and `cubic` are higher-order. A Copernicus layer is read the same way (`index` or `linear`; `space` = world / image / texture / pixel / index).

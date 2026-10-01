@@ -1,7 +1,7 @@
 {
   "name": "houdini-mcp",
   "displayName": "Houdini MCP",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Connects Claude Code to the MCP server running inside Houdini (houdini_mcp) and teaches the working rules for driving a live Houdini session.",
   "author": {
     "name": "JuyeongYi",
