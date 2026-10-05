@@ -4,7 +4,7 @@ Measured on Houdini 22.0 while building a looping flag simulation.
 
 ## Geometry
 
-- Remesh the cloth to **uniform triangles** (`remesh_geometry` from the `sop` package, with a `target_size`); quads or uneven triangles wrinkle unevenly.
+- Remesh the cloth to **uniform triangles** (a Remesh SOP through the base `create_node`, `node_type="remesh"`, with a target size; check it with `mesh_report` from the `sop` package); quads or uneven triangles wrinkle unevenly.
 - Create the pin group on the points to hold (for a flag, the edge at the pole).
 
 ## Constraints (SOP side)

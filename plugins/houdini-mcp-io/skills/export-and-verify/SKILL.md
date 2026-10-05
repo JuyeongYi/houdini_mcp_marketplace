@@ -35,7 +35,7 @@ Start with `export_formats`: it says which tool writes which format, which ROP i
 ## Frames and long jobs
 
 - `frame_range` is `[start, end]` or `[start, end, step]`; omit it for the current frame. It overrides the ROP's `$FSTART`/`$FEND` range. `write_geometry` needs a frame token (`$F4`) in the path for a range; Alembic, USD and FBX store time samples in one file.
-- Try one or two frames first. Long ranges in the foreground hit the 120-second main-thread limit, and more than 500 frames is refused in the foreground.
+- Try one or two frames first. Long ranges in the foreground hit the main-thread time limit (120 s by default), and more than 500 frames is refused in the foreground.
 - `background=True` snapshots the current session to a copy in the job directory (the user's .hip is not saved or overwritten), starts a separate hython on the same ROP and returns at once with `job` (its `job` field is the id for `job_status`) and no verification. Follow it with `job_status`, then `probe_file` on the output. It needs a scene that has been saved once.
 - Existing files are not overwritten unless `overwrite=True`.
 

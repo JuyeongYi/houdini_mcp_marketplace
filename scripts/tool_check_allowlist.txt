@@ -16,3 +16,7 @@ all_verified
 existing_normals
 missing_channel_parms
 unresolved_channel_refs
+# report_issue 의 kind 값
+wrong_result
+unclear_doc
+missing_tool

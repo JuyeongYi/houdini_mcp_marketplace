@@ -28,7 +28,7 @@ TOP networks are built with the base pack (`create_node`, `connect_nodes`, `set_
 | Longer cook, Houdini stays open, you want to dig into the items afterwards | `cook_top(path, wait=False)`, then poll `top_status(path)` until `cooking` is false |
 | Long batch that must survive Houdini closing | `cook_top(path, background=True)`, then poll base `job_status(job=...)` |
 
-- A blocking cook runs on Houdini's main thread. Past 120 s later tool calls fail with `MainThreadTimeout`. Keep blocking cooks short.
+- A blocking cook runs on Houdini's main thread. Past the main-thread time limit (120 s by default) later tool calls fail with `MainThreadTimeout`. Keep blocking cooks short.
 - `background=True` cooks a snapshot of the current session in a separate hython. The user's .hip is not saved or overwritten (`$HIP` still resolves to the scene's directory); a scene that was never saved is refused, so call `save_scene` once before.
 - A background cook does not fill this session's TOP graph. Poll it with base `job_status(job=...)` (progress, log tail, and the finished summary) and read failures with `failed_work_items(job=...)`. A background hython that dies without writing its summary (no license, crash) shows as `failed` or `exited` in `job_status`, and `failed_work_items(job=...)` returns its `error` and log tail; read the tail, fix, and cook again. For a job, `failed_work_items` keeps at most 20 cause groups and 20 log lines per example.
 - Do not cook TOPs with `run_python` loops. Do not use base `cook_node` on TOP nodes; it does not cook work items.

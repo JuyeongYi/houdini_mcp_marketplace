@@ -1,7 +1,7 @@
 {
   "name": "houdini-mcp-dop",
   "displayName": "Houdini MCP - DOP",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Skill and debugging subagent for building DOP simulations directly (RBD, pyro, FLIP, Vellum, particles), sources, test runs, Dynamics ROP caching and diagnosis with the houdini_mcp_dop tools, including Vellum cloth loops.",
   "author": {
     "name": "JuyeongYi",

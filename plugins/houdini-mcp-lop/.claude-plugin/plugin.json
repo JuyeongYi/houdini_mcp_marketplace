@@ -1,7 +1,7 @@
 {
   "name": "houdini-mcp-lop",
   "displayName": "Houdini MCP - LOP / USD",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Skill for inspecting and editing composed USD stages in Solaris with the houdini_mcp_lop tools: layout, cameras, lights and light linking.",
   "author": {
     "name": "JuyeongYi",

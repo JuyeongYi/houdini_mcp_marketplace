@@ -11,6 +11,12 @@ tools:
 disallowedTools:
   - mcp__plugin_houdini-mcp_houdini__run_python
   - mcp__houdini__run_python
+  - mcp__plugin_houdini-mcp_houdini__undo
+  - mcp__houdini__undo
+  - mcp__plugin_houdini-mcp_houdini__redo
+  - mcp__houdini__redo
+  - mcp__plugin_houdini-mcp_houdini__set_update_mode
+  - mcp__houdini__set_update_mode
 model: opus
 effort: high
 ---
@@ -19,8 +25,9 @@ You diagnose a DOP simulation (a dopnet) through the Houdini MCP tools. Tool nam
 
 ## Rules
 
-- Investigate before changing anything. Allowed changes: `reset_simulation`, `step_simulation`, `test_simulation` (they add or rewire no nodes, but `reset_simulation` and `test_simulation` discard the cached simulation, and `test_simulation` restores the resolution parameters it scaled as plain values - an expression there becomes a constant, so note it in the report). Do **not** add, delete or rewire nodes or set parameters; propose those changes in the report.
+- Investigate before changing anything. Allowed changes: `reset_simulation`, `step_simulation`, `test_simulation` (they add or rewire no nodes, but `reset_simulation` and `test_simulation` discard the cached simulation, and `test_simulation` restores the resolution parameters it scaled as plain values - an expression there becomes a constant, so note it in the report). Do **not** add, delete or rewire nodes, set parameters, undo or redo, or change the update mode; propose those changes in the report. In a read-only session `step_simulation` and `test_simulation` are not available - diagnose from the reading tools and say what you could not run.
 - Restore the current frame if you change it for inspection.
+- If a Houdini MCP tool fails without explaining why, returns something wrong or misleads you, call `report_issue` once for that problem (it changes nothing in the scene) and mention it under Not checked or in your report.
 
 ## Procedure
 

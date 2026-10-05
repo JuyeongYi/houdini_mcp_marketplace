@@ -28,6 +28,8 @@ compatibility: "Needs a GUI Houdini 22+ session running the HoudiniMCP server wi
 
 ## Compile before you commit code to the scene
 
+Wrangles are for real VEX work - per-element values, geometry edits, logic. To only add attributes with constant values (pscale, orient, a matrix, a label), use `create_attributes` from the sop package: it takes class, data type and type info as data and writes the VEX itself.
+
 1. `validate_vex(code)` — compiles with Houdini's `vcc` without touching the
    scene and returns line/column diagnostics.
    - Wrangle snippets use the default `context="cvex"`. Do **not** pass
@@ -46,7 +48,11 @@ compatibility: "Needs a GUI Houdini 22+ session running the HoudiniMCP server wi
      (`ch`/`chf`/`chi`/`chv`/`chu`/`chp`/`ch2`/`ch3`/`ch4`/`chs`/`chsop`/
      `chdict`/`chramp`) whose argument is a **valid parameter
      name** (letters/digits/underscore, not starting with a digit, no `/`) gets a matching spare
-     parameter automatically.
+     parameter automatically, the way the button next to the snippet does it: in
+     the "Generated Channel Parameters" folder above the code, with
+     `vector(chramp(...))` becoming a color ramp, and the code is set again so
+     the node actually reads the new parameters (a wrangle only binds the
+     parameters that exist when its code is set).
      A `ch()` argument that points at another node's parameter
      (`ch("../ctrl/amp")`) or that isn't a valid name at all
      (`ch("my amp")`) is never turned into a spare parameter — it's reported
@@ -67,8 +73,26 @@ compatibility: "Needs a GUI Houdini 22+ session running the HoudiniMCP server wi
      vector parm), the node is still created/updated normally and the
      mismatch is reported under `channel_parms.invalid_values` (with the
      expected type and size) instead of raising.
+   - **The code that creates an attribute sets its type info.** New
+     scalars, ints, strings, arrays, colors, UVs and anything whose meaning is
+     not obvious need nothing. A new vector or matrix whose name means a
+     position, direction, normal, orientation or transform (rest, restP,
+     center, dir, aim, offset, tangentu, restN, orientation, xform ...) needs a
+     `setattribtypeinfo(0, "point", "dir", "vector");` line in the same code:
+     Houdini types only well-known names itself (P, N, v, up, Cd, orient, uv),
+     so a custom `rest` or `dir` is left behind by a Transform SOP and exported
+     to USD without a role. Without that line the call is refused (no node is
+     created, or the old code is kept) and the error gives the lines to add,
+     with a guessed value - check each guess, and use "none" for plain data
+     that must not transform (the literal call counts, even with no points to
+     run over). Writing an attribute that already exists keeps its type info.
+     Names like pivot, rot or local* are never guessed.
+   - Wrangle code is only written through these two tools: the base
+     `create_node` / `set_parms` refuse a `snippet`.
 3. `diagnose_wrangle(path)` — compile errors, cook errors, attribute problems
-   (including opinputN) and missing channel parameters in one call.
+   (including opinputN), missing channel parameters, the attributes the code
+   creates and the position/direction-like ones among them missing type info
+   (with the `setattribtypeinfo` lines to add), in one call.
    - When `cook=True` (default), the report also includes a per-attribute
      min/max/mean summary for every attribute the code writes.
 

@@ -18,6 +18,10 @@ A COP network's result is an image; you cannot judge it from parameters.
 - `cop_preview(nodes, frame, tile_size, columns)` — one or more COP outputs as a contact sheet. Pick an output with `path:output` (name or index), e.g. `/img/tex/worley1:dist2`. Up to 16 tiles; use it to compare stages side by side.
   - Display adapts to the layer type: IDs get hash colors, data layers are stretched per channel (`normalize="auto"`), color layers are shown in sRGB. Use `normalize="off"` to see clipping in 0..1.
 - `cop_layer_info(path)` — per output: resolution, channels, storage type, value ranges. A height map with min = max is flat; a mask stuck at 0 or 1 is clipped.
+- Exact values at chosen spots: base `sample_volume(path=<COP node>, positions=[...], fields=[<output names>], sampling=..., space=...)` — one number per channel, up to 500 positions. Use it to check a seam, a mask edge or a single texel instead of judging from a preview.
+  - `sampling="index"` returns the stored pixel value unblended (masks, IDs); `"linear"` (default) blends the four nearest pixels. `smooth` and `cubic` are for SOP volumes only and are refused here.
+  - `space` says what the positions mean: `texture` [u, v] 0..1, `pixel` [x, y] from the bottom-left, `image` [x, y] -1..1 across the width, `index` the buffer pixel [x, y], or `world` [x, y, z] (default). `from_points=<SOP>` reads at that SOP's point positions (world), e.g. a height map under scattered points.
+  - The result gives each sample's `buffer` position (integers are pixel centres). Outside the image you get the layer's border value. `compare_volumes` works on SOP volumes only.
 
 Preview after every change. Texture quality problems found only in the render cost a render cycle.
 

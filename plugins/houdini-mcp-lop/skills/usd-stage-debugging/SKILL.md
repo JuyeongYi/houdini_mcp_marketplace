@@ -15,7 +15,7 @@ These tools read the `pxr.Usd.Stage` a LOP node produces, after sublayers, refer
 
 1. `stage_info(lop)` — prim counts by type, layers, up axis, time range.
 2. `list_prims(lop, root, depth, limit)` / `find_prims(lop, pattern, traversal)` — always keep `limit`; stages are large. Patterns: `/world/**`, `%type:Mesh`, `%kind:component`. `traversal="all"` includes inactive prims.
-3. `prim_info(lop, primpath)` — type, visibility, bounds, material binding, **variant sets with their choices and current selection**, and instance/prototype counts for a PointInstancer.
+3. `prim_info(lop, primpath)` — type, visibility, bounds, material binding, **variant sets with their choices and current selection**, and instance/prototype counts for a PointInstancer. For a light it adds a `light` section (intensity, exposure, color, shape, shaping, shadow, light/shadow links, world position and direction) keyed by USD attribute names.
 4. `get_usd_attribute(lop, primpath, name, frame)` — the resolved value. `list_usd_attributes` lists names first.
 5. **Wrong value?** `prim_origin(lop, primpath, attribute=...)` shows which layer and arc wins. `layer_contents(lop, identifier, primpath)` shows the USDA of that layer; `layer_stack(lop)` lists the layers and the LOP nodes that wrote them.
 
@@ -29,7 +29,7 @@ LOP node parameters are USD names punycode-encoded (inputs:intensity becomes xn_
 
 Every edit inserts a LOP node after the given node, with your English comment, and rewires downstream connections. Continue the chain from the node it returns. `import_sop`, `create_camera`, `create_light` and `create_light_rig` can start an empty LOP network (`/stage`) with a first node that has no input; the other edit tools need an existing stage.
 
-- `set_usd_attribute(lop, primpath, name, value, comment, type_name)` — any attribute. A missing attribute defined by an API schema gets its type from the schema; otherwise give `type_name`.
+- `set_usd_attribute(lop, primpath, comment, name=..., value=...)` or `values={...}` for several attributes of one prim in one node (one undo step). An attribute the prim does not have yet gets its type from the API schema that defines it, and that schema is applied (e.g. `inputs:shaping:cone:angle` applies ShapingAPI, `inputs:shadow:enable` ShadowAPI; the result lists the schemas it applied). A name only other prim types define is refused - check the name, or set it alone with `type_name`.
 - `set_variant`, `add_reference` (`reference_type`: file, payload, prim, inherit, specialize), `add_sublayer`.
 
 ## Layout
@@ -45,8 +45,8 @@ Every edit inserts a LOP node after the given node, with your English comment, a
 ## Lights
 
 - `create_light(lop, light_type, primpath, comment, intensity, exposure, color, translate, rotate, texture, properties)` — one UsdLux light. Name prims by role: /lights/key_light, not light1.
-- `set_light(lop, primpath, comment, properties)` — change an existing light, including lights from references. Keys are the same aliases `light_info` returns (intensity, exposure, color, radius, cone angle and softness, IES file, shadow enable/color/distance) or raw `inputs:` USD names. Shaping and shadow APIs are applied when needed.
-- `light_info(lop, primpath)` / `list_lights(lop)` — read back what you set.
+- Change an existing light (including lights from references) with `set_usd_attribute(..., values={"inputs:intensity": 2, "inputs:shaping:cone:angle": 30})`. The keys of `prim_info`'s `light` section can be passed straight back.
+- `prim_info(lop, primpath)` / `list_lights(lop)` — read back what you set.
 - `set_light_link(lop, light, comment, include, exclude, link)` — which geometry a light illuminates (`link="light"`) or which casts its shadows (`link="shadow"`). The result lists linked and unlinked geometry.
 - `create_light_rig(lop, comment, target, camera)` — a verification rig: key, fill and rim distant lights placed relative to the camera's view of the target, plus an environment dome. Use it to see a look quickly; build final lighting light by light.
 

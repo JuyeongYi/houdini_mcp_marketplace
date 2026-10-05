@@ -16,10 +16,12 @@ Work from the symptom to the cause. Prefer reading tools; change nothing until t
 3. `cook_chain` on the output node — what cooks, in what order, to produce it. The broken link is usually the first node whose output stops looking right.
 4. `geometry_stats` / `list_attributes` / `list_groups` at each step to see where points, attributes or groups disappear. Use `output` for nodes with several outputs. Passing an OBJ path reads its display SOP.
 5. `attrib_stats` for distributions and NaN counts; `group_members`, `prim_intrinsics` for what a group holds or what a packed prim carries.
+6. When the question is not a stored attribute (which pieces fall before the impact, how far points are from the collider, how many edges are too short), compute it with `measure_geometry`: a VEX snippet run on a copy of the geometry, returned as statistics - per frame with `frames`, against other nodes with `inputs`, with temporary parameter values through `overrides`. Nothing in the scene changes.
 
 ## Things that change over time
 
 - `geometry_over_time(path, frames=[...], attribs=["v"])` — point counts, bounding box, attribute ranges and NaN per frame, with flags for sudden jumps (explosions). It does not move the playhead.
+- `measure_geometry(path, code, outputs, frames=[...])` for a metric of your own over time (e.g. pin motion, seam continuity).
 - Any geometry tool takes `frame=` to read a single frame.
 
 ## Slow scenes
